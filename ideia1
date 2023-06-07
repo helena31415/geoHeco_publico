@@ -1,0 +1,37 @@
+Importar os dados:
+
+Leia os dados da sua tabelona em um objeto de dados no R. Suponha que o nome do objeto seja dados. Calcular a taxa de acumulação de carvão vegetal:
+
+Para obter a taxa de acumulação de carvão vegetal, você pode dividir a quantidade absoluta de carvão em cada seção temporal pela área da seção temporal. Suponha que a área da seção temporal seja representada pela variável area_secao_temporal. Calcule a taxa de acumulação de carvão vegetal usando a fórmula: dados$taxa_acumulacao_carvao <- dados$carvao / area_secao_temporal. Separar os componentes de fundo e picos:
+
+Para separar os componentes de fundo e picos, você pode usar a técnica de regressão ponderada localmente com uma janela de 1000 anos. Isso pode ser realizado com o pacote loess do R. Suponha que você tenha uma coluna no seu conjunto de dados chamada secao_temporal representando as seções temporais. Para separar os componentes de fundo e picos, você pode usar o seguinte código: dados$componente_fundo <- predict(loess(carvao ~ secao_temporal, data = dados, span = 1000)) dados$componente_picos <- dados$carvao - dados$componente_fundo 4. Identificar a distribuição de ruído (Cnoise):
+
+Para identificar a distribuição de ruído (Cnoise), você pode usar um modelo de mistura gaussiana. Utilize o pacote mclust para ajustar um modelo de mistura gaussiana aos dados de componentes de picos. Suponha que você queira identificar a distribuição de ruído na coluna componente_picos dos seus dados. O código a seguir realiza a identificação da distribuição de ruído: library(mclust) modelo_mistura <- Mclust(dados$componente_picos) distribuicao_ruido <- modelo_mistura$z[, "noise"]
+
+Definir limiar usando o percentil 99 da distribuição de ruído:
+Para definir um limiar, você pode usar o percentil 99 da distribuição de ruído (Cnoise). Suponha que você queira definir o limiar na variável limiar. O código a seguir define o limiar usando o percentil 99: limiar <- quantile(dados$componente_picos, probs = 0.99)
+
+6.Remover picos estatisticamente não significativos:
+
+Para remover picos estatisticamente não significativos, você pode utilizar um critério mínimo de contagem de Poisson. Suponha que você queira manter apenas os picos cuja contagem seja maior que um valor mínimo definido (min_count). O código a seguir remove os picos estatisticamente não significativos: min_count <- 5 # Exemplo de valor mínimo de contagem de Poisson dados$componente_picos[dados$componente_picos < min_count] <- 0 7. Realizar outras análises estatísticas e de agrupamento conforme necessário:
+
+Depois de realizar as etapas anteriores, você pode realizar outras análises estatísticas e de agrupamento nos seus dados, conforme necessário. Utilize as bibliotecas apropriadas para as análises específicas que deseja realizar. ###########################################################################################################################################################
+
+2. Calcular a taxa de acumulação de carvão vegetal
+area_secao_temporal <- 1000 # Exemplo de valor da área da seção temporal
+
+dados$taxa_acumulacao_carvao <- dados$carvao / area_secao_temporal
+
+3. Separar os componentes de fundo e picos
+dados$componente_fundo <- predict(loess(carvao ~ secao_temporal, data = dados, span = 1000)) dados$componente_picos <- dados$carvao - dados$componente_fundo
+
+4. Identificar a distribuição de ruído (Cnoise)
+library(mclust)
+
+modelo_mistura <- Mclust(dados$componente_picos) distribuicao_ruido <- modelo_mistura$z[, "noise"]
+
+5. Definir limiar usando o percentil 99 da distribuição de ruído
+limiar <- quantile(dados$componente_picos, probs = 0.99)
+
+6. Remover picos estatisticamente não significativos
+min_count <- 5 # Exemplo de valor mínimo de contagem de Poisson dados$componente_picos[dados$componente_picos < min_count] <- 0
